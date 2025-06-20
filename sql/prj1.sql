@@ -20,3 +20,7 @@ FROM board;
 SELECT *
 FROM board;
 
+SELECT COUNT(*) / 10
+FROM board;
+
+

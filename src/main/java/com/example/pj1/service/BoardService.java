@@ -34,7 +34,9 @@ public class BoardService {
         // 필요한 정보만 가져오도록 변경
         List<BoardListInfo> boardList = boardRepository
                 .findAllBy(PageRequest.of(page, 10, Sort.by("id").descending()));
+
         return boardList;
     }
+
 
 }

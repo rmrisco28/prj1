@@ -46,8 +46,8 @@ public class BoardController {
             Model model) {
 
         var result = boardService.list(page);
-
         model.addAttribute("boardList", result);
+
         return "board/list";
     }
 }
