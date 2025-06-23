@@ -1,7 +1,7 @@
-package com.example.pj1.repository;
+package com.example.pj1.board.repository;
 
-import com.example.pj1.dto.BoardListInfo;
-import com.example.pj1.entity.Board;
+import com.example.pj1.board.dto.BoardListInfo;
+import com.example.pj1.board.entity.Board;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
