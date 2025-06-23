@@ -31,13 +31,11 @@ public class MemberController {
         try {
             // service
             memberService.add(data);
-            rttr.addFlashAttribute("alert",
-                    Map.of("code", "success", "message", "회원 가입되었습니다."));
+            rttr.addFlashAttribute("alert", Map.of("code", "success", "message", "회원 가입되었습니다."));
 
             return "redirect:/board/list";
         } catch (DuplicateKeyException e) {
-            rttr.addFlashAttribute("alert",
-                    Map.of("code", "warning", "message", e.getMessage()));
+            rttr.addFlashAttribute("alert", Map.of("code", "warning", "message", e.getMessage()));
             // 작성했던 다른 값이 사라지게 하고 싶지 않다.
             // data에서 받은 값이 model에 들어가있으니까,
             rttr.addFlashAttribute("member", data);
@@ -52,4 +50,65 @@ public class MemberController {
         return "member/list";
     }
 
+    @GetMapping("view")
+    public String view(String id, Model model) {
+        model.addAttribute("member", memberService.get(id));
+        return "member/view";
+    }
+
+    @PostMapping("remove")
+    public String remove(MemberForm data, RedirectAttributes rttr) {
+        boolean result = memberService.remove(data);
+        if (result) {
+            rttr.addFlashAttribute("alert", Map.of("code", "danger", "message", data.getId() + "님 탈퇴 되었습니다."));
+            return "redirect:/member/list";
+        } else {
+            rttr.addFlashAttribute("alert", Map.of("code", "danger", "message", "암호가 일치하지 않습니다."));
+
+            rttr.addAttribute("id", data.getId());
+
+            return "redirect:/member/view";
+        }
+    }
+
+    @GetMapping("edit")
+    public String edit(String id, Model model) {
+        model.addAttribute("member", memberService.get(id));
+        return "member/edit";
+    }
+
+    @PostMapping("edit")
+    public String edit(MemberForm data, RedirectAttributes rttr) {
+
+        boolean result = memberService.updata(data);
+        if (result) {
+            rttr.addFlashAttribute("alert", Map.of("code", "success", "message", "회원 정보가 변경되었습니다."));
+            rttr.addAttribute("id", data.getId());
+            return "redirect:/member/view";
+        } else {
+            rttr.addAttribute("id", data.getId());
+            rttr.addFlashAttribute("alert", Map.of("code", "warning", "message", "암호가 일치하지 않습니다."));
+
+            return "redirect:/member/edit";
+        }
+    }
+
+    @PostMapping("changePw")
+    public String changePassword(String id, String oldPassword, String newPassword, RedirectAttributes rttr) {
+
+        boolean result = memberService.updatePassword(id, oldPassword, newPassword);
+
+        if (result) {
+            rttr.addFlashAttribute("alert", Map.of("code", "success", "message", "암호가 변경되었습니다."));
+            System.out.println(oldPassword);
+            System.out.println(newPassword);
+        } else {
+            rttr.addFlashAttribute("alert", Map.of("code", "warning", "message", "암호가 일치하지 않습니다."));
+            System.out.println(id);
+            System.out.println(oldPassword);
+            System.out.println(newPassword);
+        }
+        rttr.addAttribute("id", id);
+        return "redirect:/member/edit";
+    }
 }

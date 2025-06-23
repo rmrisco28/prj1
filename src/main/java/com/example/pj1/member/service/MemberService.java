@@ -1,5 +1,6 @@
 package com.example.pj1.member.service;
 
+import com.example.pj1.member.dto.MemberDto;
 import com.example.pj1.member.dto.MemberForm;
 import com.example.pj1.member.dto.MemberListInfo;
 import com.example.pj1.member.entity.Member;
@@ -49,5 +50,65 @@ public class MemberService {
         // id, nick 프로젝션 인터페이스를 추가로 만듭니다.
         // MemberListInfo.interface
         return memberRepository.findAllBy();
+    }
+
+    public Object get(String id) {
+        Member member = memberRepository.findById(id).get();
+        // 암호까지 넘겨줄 필요 없으니까
+        // 새로 dto 만들기
+        MemberDto dto = new MemberDto();
+        dto.setId(member.getId());
+        dto.setNickName(member.getNickName());
+        dto.setInfo(member.getInfo());
+        dto.setCreatedAt(member.getCreatedAt());
+        return dto;
+    }
+
+    public boolean remove(MemberForm data) {
+        Member member = memberRepository.findById(data.getId()).get();
+        String dbPw = member.getPassword();
+        String formPw = data.getPassword();
+
+        if (dbPw.equals(formPw)) {
+            memberRepository.delete(member);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public boolean updata(MemberForm data) {
+        // 조회
+        Member member = memberRepository.findById(data.getId()).get();
+
+        String dbPw = member.getPassword();
+        String formPw = data.getPassword();
+
+        if (dbPw.equals(formPw)) {
+            // 변경
+            member.setNickName(data.getNickName());
+            member.setInfo(data.getInfo());
+            // 저장
+            memberRepository.save(member);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public boolean updatePassword(String id, String oldPassword, String newPassword) {
+        // 꼭 조회를 해야함. 안그러면 나머지 값들이 null 로 변경된다.
+        Member db = memberRepository.findById(id).get();
+        String dbPw = db.getPassword();
+        System.out.println("dbPw = " + dbPw);
+        System.out.println("db = " + db);
+        if (dbPw.equals(oldPassword)) {
+            db.setPassword(newPassword);
+            memberRepository.save(db);
+
+            return true;
+        } else {
+            return false;
+        }
     }
 }

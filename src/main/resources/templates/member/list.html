@@ -24,6 +24,10 @@
                 <tbody>
                 <tr th:each="member: ${memberList}">
                     <td th:text="${member.id}"></td>
+                    <td>
+                        <a th:href="@{/member/view(id=${member.id})}"
+                           th:text="${member.id}"></a>
+                    </td>
                     <td th:text="${member.nickName}"></td>
                 </tr>
                 </tbody>
@@ -31,6 +35,8 @@
         </div>
     </div>
 </div>
+
+
 <th:block th:replace="~{layout/main::commonScript}"/>
 </body>
 </html>
