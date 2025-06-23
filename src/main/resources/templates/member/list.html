@@ -19,12 +19,16 @@
                 <tr>
                     <th>ID</th>
                     <th>NICKNAME</th>
+                    <th>정보 변</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr th:each="member: ${memberList}">
                     <td th:text="${member.id}"></td>
                     <td th:text="${member.nickName}"></td>
+                    <td>
+                        <a th:href="@{/member/edit(id=${member.id})}">수정</a>
+                    </td>
                 </tr>
                 </tbody>
             </table>

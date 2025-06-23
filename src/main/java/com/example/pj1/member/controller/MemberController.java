@@ -52,4 +52,29 @@ public class MemberController {
         return "member/list";
     }
 
+    @GetMapping("edit")
+    public String edit(Model model, String id) {
+        var memberInfo = memberService.get(id);
+        model.addAttribute("memberInfo", memberInfo);
+        return "member/edit";
+    }
+
+    @PostMapping("edit")
+    public String edit(MemberForm data, RedirectAttributes rttr) {
+        try {
+            // service
+            memberService.add(data);
+            rttr.addFlashAttribute("alert",
+                    Map.of("code", "success", "message", "변경되었습니다.."));
+
+            return "redirect:/board/list";
+        } catch (DuplicateKeyException e) {
+            rttr.addFlashAttribute("alert",
+                    Map.of("code", "warning", "message", e.getMessage()));
+            // 작성했던 다른 값이 사라지게 하고 싶지 않다.
+            // data 에서 받은 값이 model에 들어가있으니까,
+            rttr.addFlashAttribute("member", data);
+            return "redirect:/member/edit";
+        }
+    }
 }

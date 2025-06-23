@@ -1,5 +1,6 @@
 package com.example.pj1.member.service;
 
+import com.example.pj1.board.entity.Board;
 import com.example.pj1.member.dto.MemberForm;
 import com.example.pj1.member.dto.MemberListInfo;
 import com.example.pj1.member.entity.Member;
@@ -49,5 +50,16 @@ public class MemberService {
         // id, nick 프로젝션 인터페이스를 추가로 만듭니다.
         // MemberListInfo.interface
         return memberRepository.findAllBy();
+    }
+
+    public Member get(String id) {
+        Member MI = memberRepository.findById(id).get();
+        Member member = new Member();
+        member.setId(MI.getId());
+        member.setNickName(MI.getNickName());
+        member.setInfo(MI.getInfo());
+        member.setPassword(MI.getPassword());
+        memberRepository.save(member);
+        return member;
     }
 }
