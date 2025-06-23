@@ -69,4 +69,21 @@ public class BoardService {
 
         return dto;
     }
+
+    public void remove(Integer id) {
+        boardRepository.deleteById(id);
+        // 지웠을때 지운 알림을 내고 싶을 때
+        // 삭제
+    }
+
+    public void update(BoardForm data) {
+        // 조회
+        Board board = boardRepository.findById(data.getId()).get();
+        // 수정
+        board.setTitle(data.getTitle());
+        board.setContent(data.getContent());
+        board.setWriter(data.getWriter());
+        // 저장
+        boardRepository.save(board);
+    }
 }
