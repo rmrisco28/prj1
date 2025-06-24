@@ -122,7 +122,7 @@ public class MemberService {
                 dto.setNickName(db.get().getNickName());
                 dto.setInfo(db.get().getInfo());
                 dto.setCreatedAt(db.get().getCreatedAt());
-
+                // TODO: 패스워드 검색
                 session.setAttribute("loggedInUser", dto);
                 return true;
             }

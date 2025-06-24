@@ -77,7 +77,7 @@ public class BoardController {
 
     @GetMapping("view")
     public String view(Integer id, Model model) {
-
+        // TODO: 임시로 만들었기 때문에
         //service로 일 시키고
         var dto = boardService.get(id);
 
