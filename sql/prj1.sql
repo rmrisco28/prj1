@@ -1,6 +1,7 @@
 CREATE DATABASE prj1;
 USE prj1;
 
+#게시물 테이블
 CREATE TABLE board
 (
     id        INT AUTO_INCREMENT NOT NULL,
@@ -32,3 +33,23 @@ CREATE TABLE member
 );
 
 DROP table member;
+
+
+# 회원만 글을 작성할 수 있으므로
+# board에 writer를 멤버의 id로 수정
+# 외래키 제약 사항
+
+UPDATE board
+SET writer = 'park'
+WHERE id % 2 = 1;
+
+UPDATE board
+SET writer = 'son'
+WHERE id % 2 = 0;
+
+# 외래키 제약사항 추가
+ALTER TABLE board
+    ADD FOREIGN KEY (writer) REFERENCES member (id);
+
+
+

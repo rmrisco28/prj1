@@ -1,5 +1,6 @@
 package com.example.pj1.board.entity;
 
+import com.example.pj1.member.entity.Member;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -19,9 +20,12 @@ public class Board {
 
     private String title;
     private String content;
-    private String writer;
 
-    @Column(name = "create_at", insertable = false, updatable = false)
+    @ManyToOne
+    @JoinColumn(name = "writer")
+    private Member writer;
+
+    @Column(name = "created_at", insertable = false, updatable = false)
     private LocalDateTime createdAt;
 
 }

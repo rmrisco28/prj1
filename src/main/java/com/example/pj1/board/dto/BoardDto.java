@@ -1,6 +1,7 @@
 package com.example.pj1.board.dto;
 
 import com.example.pj1.board.entity.Board;
+import com.example.pj1.member.dto.MemberDto;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -15,6 +16,6 @@ public class BoardDto implements Serializable {
     Integer id;
     String title;
     String content;
-    String writer;
+    MemberDto writer;
     LocalDateTime createdAt;
 }

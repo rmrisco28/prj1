@@ -5,6 +5,7 @@ import com.example.pj1.member.dto.MemberForm;
 import com.example.pj1.member.dto.MemberListInfo;
 import com.example.pj1.member.entity.Member;
 import com.example.pj1.member.repository.MemberRepository;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
@@ -100,8 +101,6 @@ public class MemberService {
         // 꼭 조회를 해야함. 안그러면 나머지 값들이 null 로 변경된다.
         Member db = memberRepository.findById(id).get();
         String dbPw = db.getPassword();
-        System.out.println("dbPw = " + dbPw);
-        System.out.println("db = " + db);
         if (dbPw.equals(oldPassword)) {
             db.setPassword(newPassword);
             memberRepository.save(db);
@@ -111,4 +110,24 @@ public class MemberService {
             return false;
         }
     }
+
+    public boolean login(String id, String password, HttpSession session) {
+        Optional<Member> db = memberRepository.findById(id);
+        if (db.isPresent()) {
+            String dbPassword = db.get().getPassword();
+            if (dbPassword.equals(password)) {
+                // memberDto를 session에 넣기
+                MemberDto dto = new MemberDto();
+                dto.setId(db.get().getId());
+                dto.setNickName(db.get().getNickName());
+                dto.setInfo(db.get().getInfo());
+                dto.setCreatedAt(db.get().getCreatedAt());
+
+                session.setAttribute("loggedInUser", dto);
+                return true;
+            }
+        }
+        return false;
+    }
+
 }

@@ -5,6 +5,9 @@ import com.example.pj1.board.dto.BoardForm;
 import com.example.pj1.board.dto.BoardListInfo;
 import com.example.pj1.board.entity.Board;
 import com.example.pj1.board.repository.BoardRepository;
+import com.example.pj1.member.dto.MemberDto;
+import com.example.pj1.member.entity.Member;
+import com.example.pj1.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -21,12 +24,19 @@ import java.util.Map;
 public class BoardService {
 
     private final BoardRepository boardRepository;
+    private final MemberRepository memberRepository;
 
-    public void add(BoardForm formData) {
+    public void add(BoardForm formData, MemberDto user) {
+        System.out.println(formData);
+        System.out.println(user);
         Board board = new Board();
         board.setTitle(formData.getTitle());
         board.setContent(formData.getContent());
-        board.setWriter(formData.getWriter());
+
+        // board.setWriter(user.getId()); // 멤버 타입으로 바꼈다.
+        Member member = memberRepository.findById(user.getId()).get();
+        board.setWriter(member);
+
 
         boardRepository.save(board);
     }
@@ -36,16 +46,17 @@ public class BoardService {
         // 바로 게시물의 본문까지 가져올 필요없다.
         // 필요한 정보만 가져오도록 변경
         Page<BoardListInfo> boardPage = boardRepository
-                .findAllBy(PageRequest.of(page, 10, Sort.by("id").descending()));
+                .findAllBy(PageRequest.of(page - 1, 10, Sort.by("id").descending()));
+
+        List<BoardListInfo> boardList = boardPage.getContent();
 
         Integer rightPageNumber = ((page - 1) / 10 + 1) * 10;
         Integer leftPageNumber = rightPageNumber - 9;
         rightPageNumber = Math.min(rightPageNumber, boardPage.getTotalPages());
 
-        // 마지막 페이지확인하기
-        List<BoardListInfo> boardList = boardPage.getContent();
-        boardPage.getTotalElements();
-        boardPage.getTotalPages();
+//        // 마지막 페이지확인하기
+//        boardPage.getTotalElements();
+//        boardPage.getTotalPages();
 
         var result = Map.of("boardList", boardList,
                 "totalElements", boardPage.getTotalElements(),
@@ -64,7 +75,14 @@ public class BoardService {
         dto.setId(id);
         dto.setTitle(board.getTitle());
         dto.setContent(board.getContent());
-        dto.setWriter(board.getWriter());
+
+        MemberDto memberDto = new MemberDto();
+        memberDto.setId(board.getWriter().getId());
+        memberDto.setNickName(board.getWriter().getNickName());
+
+        dto.setWriter(memberDto);
+        dto.setCreatedAt(board.getCreatedAt());
+//        dto.setWriter(board.getWriter());
         dto.setCreatedAt(board.getCreatedAt());
 
         return dto;
@@ -82,7 +100,8 @@ public class BoardService {
         // 수정
         board.setTitle(data.getTitle());
         board.setContent(data.getContent());
-        board.setWriter(data.getWriter());
+
+
         // 저장
         boardRepository.save(board);
     }

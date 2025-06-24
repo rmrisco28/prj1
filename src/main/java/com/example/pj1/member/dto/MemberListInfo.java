@@ -4,4 +4,5 @@ public interface MemberListInfo {
     String getId();
 
     String getNickName();
+
 }
