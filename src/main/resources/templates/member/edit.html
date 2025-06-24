@@ -27,7 +27,7 @@
                 </div>
                 <div class="mb-3">
                     <label for="textareaInfo" class="form-label">자기소개</label>
-                    <textarea th:value="${member.info}"
+                    <textarea th:text="${member.info}"
                               class="form-control"
                               name="info" id="textareaInfo" rows="3"></textarea>
                 </div>

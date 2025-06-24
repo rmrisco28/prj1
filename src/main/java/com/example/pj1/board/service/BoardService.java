@@ -27,8 +27,6 @@ public class BoardService {
     private final MemberRepository memberRepository;
 
     public void add(BoardForm formData, MemberDto user) {
-        System.out.println(formData);
-        System.out.println(user);
         Board board = new Board();
         board.setTitle(formData.getTitle());
         board.setContent(formData.getContent());
@@ -41,22 +39,24 @@ public class BoardService {
         boardRepository.save(board);
     }
 
-    public Map<String, Object> list(Integer page) {
+    public Map<String, Object> list(Integer page, String keyword) {
 //        List<Board> list = boardRepository.findAll();
-        // 바로 게시물의 본문까지 가져올 필요없다.
-        // 필요한 정보만 가져오도록 변경
-        Page<BoardListInfo> boardPage = boardRepository
-                .findAllBy(PageRequest.of(page - 1, 10, Sort.by("id").descending()));
+
+        Page<BoardListInfo> boardPage = null;
+
+        if (keyword == null || keyword.isBlank()) {
+            boardPage = boardRepository
+                    .findAllBy(PageRequest.of(page - 1, 10, Sort.by("id").descending()));
+        } else {
+            boardPage = boardRepository.searchByKeyword("%" + keyword + "%",
+                    PageRequest.of(page - 1, 10, Sort.by("id").descending()));
+        }
 
         List<BoardListInfo> boardList = boardPage.getContent();
 
         Integer rightPageNumber = ((page - 1) / 10 + 1) * 10;
         Integer leftPageNumber = rightPageNumber - 9;
         rightPageNumber = Math.min(rightPageNumber, boardPage.getTotalPages());
-
-//        // 마지막 페이지확인하기
-//        boardPage.getTotalElements();
-//        boardPage.getTotalPages();
 
         var result = Map.of("boardList", boardList,
                 "totalElements", boardPage.getTotalElements(),
@@ -88,21 +88,31 @@ public class BoardService {
         return dto;
     }
 
-    public void remove(Integer id) {
-        boardRepository.deleteById(id);
-        // 지웠을때 지운 알림을 내고 싶을 때
-        // 삭제
+    public boolean remove(Integer id, MemberDto user) {
+        if (user != null) {
+            Member db = boardRepository.findById(id).get().getWriter();
+            if (db.getId().equals(user.getId())) {
+                boardRepository.deleteById(id);
+                return true;
+            }
+        }
+        return false;
     }
 
-    public void update(BoardForm data) {
-        // 조회
-        Board board = boardRepository.findById(data.getId()).get();
-        // 수정
-        board.setTitle(data.getTitle());
-        board.setContent(data.getContent());
+    public boolean update(BoardForm data, MemberDto user) {
+        if (user != null) {
 
+            // 조회
+            Board board = boardRepository.findById(data.getId()).get();
+            // 수정
+            if (board.getWriter().getId().equals(user.getId())) {
 
-        // 저장
-        boardRepository.save(board);
+                board.setTitle(data.getTitle());
+                board.setContent(data.getContent());
+                boardRepository.save(board);
+                return true;
+            }
+        }
+        return false;
     }
 }

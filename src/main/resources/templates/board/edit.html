@@ -19,21 +19,18 @@
             </h2>
             <form id="editForm" class="mb-3" th:action="@{/board/edit}" method="post">
                 <input type="hidden" name="id" th:value="${board.id}">
-                <div class="md-3">
+                <div class="mb-3">
                     <!--label+input-->
                     <label class="form-label" for="titleInput">제목</label>
                     <input th:value="${board.title}" name="title" class="form-control" type="text" id="titleInput">
                 </div>
-                <div class="md-3">
+                <div class="mb-3">
                     <label class="form-label" for="contentTextarea">본문</label>
                     <textarea th:text="${board.content}" class="form-control" name="content" id="contentTextarea"
                               rows="10"></textarea>
                 </div>
-                <div class="md-3">
-                    <label class="form-label" for="writerInput">작성자</label>
-                    <input th:value="${board.writer}" name="writer" class="form-control" type="text" id="writerInput">
-                </div>
-                <div class="md-3">
+
+                <div class="mb-3">
                     <button type="button" class="btn btn-primary"
                             data-bs-toggle="modal"
                             data-bs-target="#editModal">저장

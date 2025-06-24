@@ -66,9 +66,11 @@ public class BoardController {
     public String list(
             @RequestParam(defaultValue = "1")
             Integer page,
+            @RequestParam(defaultValue = "")
+            String keyword,
             Model model) {
 
-        var result = boardService.list(page);
+        var result = boardService.list(page, keyword);
 
 //        model.addAttribute("boardList", result);
         model.addAllAttributes(result);
@@ -89,13 +91,24 @@ public class BoardController {
     }
 
     @PostMapping("remove")
-    public String remove(Integer id, RedirectAttributes rttr) {
-        boardService.remove(id);
-        rttr.addFlashAttribute("alert",
-                Map.of("code", "danger", "message", id + "번 게시물이 삭제되었습니다."));
+    public String remove(Integer id,
+                         @SessionAttribute(value = "loggedInUser", required = false)
+                         MemberDto user,
+                         RedirectAttributes rttr) {
+        boolean result = boardService.remove(id, user);
+
+        if (result) {
+            rttr.addFlashAttribute("alert",
+                    Map.of("code", "danger", "message", id + "번 게시물이 삭제되었습니다."));
+            return "redirect:/board/list";
+        } else {
+            rttr.addFlashAttribute("alert",
+                    Map.of("code", "danger", "message", id + "번 게시물이 삭제되지 않았습니다."));
+            rttr.addAttribute("id", id);
+            return "redirect:/board/view";
+        }
 
 
-        return "redirect:/board/list";
     }
 
     @GetMapping("edit")
@@ -106,11 +119,22 @@ public class BoardController {
     }
 
     @PostMapping("edit")
-    public String editPost(BoardForm data, RedirectAttributes rttr) {
-        boardService.update(data);
-        rttr.addFlashAttribute("alert",
-                Map.of("code", "success", "message",
-                        data.getId() + "번 게시물이 수정되었습니다."));
+    public String editPost(BoardForm data,
+                           @SessionAttribute(value = "loggedInUser", required = false)
+                           MemberDto user,
+                           RedirectAttributes rttr) {
+
+        boolean result = boardService.update(data, user);
+        if (result) {
+
+            rttr.addFlashAttribute("alert",
+                    Map.of("code", "success", "message",
+                            data.getId() + "번 게시물이 수정되었습니다."));
+        } else {
+            rttr.addFlashAttribute("alert",
+                    Map.of("code", "success", "message",
+                            data.getId() + "번 게시물이 수정되지않았습니다."));
+        }
         rttr.addAttribute("id", data.getId());
         return "redirect:/board/list";
     }
