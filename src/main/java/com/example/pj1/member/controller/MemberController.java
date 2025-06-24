@@ -120,7 +120,8 @@ public class MemberController {
     }
 
     @PostMapping("login")
-    public String loginProcess(String id, String password, HttpSession session,
+    public String loginProcess(String id, String password,
+                               HttpSession session,
                                RedirectAttributes rttr) {
         boolean result = memberService.login(id, password, session);
 
@@ -136,6 +137,8 @@ public class MemberController {
             rttr.addFlashAttribute("alert",
                     Map.of("code", "warning",
                             "message", "아이디/패스워드가 일치하지 않습니다."));
+            rttr.addFlashAttribute("id", id);
+
             return "redirect:/member/login";
         }
     }
